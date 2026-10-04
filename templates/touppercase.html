@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}String Methods | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section class="narrow">
+    <h1>String methods</h1>
+    <p class="muted">Type some text, choose a method and run it.</p>
+
+    <form id="string-form" action="{{ url_for('run_string_method') }}" method="post" class="stack">
+        <label for="text">Text</label>
+        <input type="text" id="text" name="text" autocomplete="off" required>
+
+        <label for="method">Method</label>
+        <select id="method" name="method">
+            {% for m in methods %}
+            <option value="{{ m.key }}" data-args='{{ m.args | tojson }}'>{{ m.label }}</option>
+            {% endfor %}
+        </select>
+
+        <div id="arg1-wrap" hidden><label for="arg1" id="arg1-label"></label><input type="text" id="arg1" name="arg1" autocomplete="off"></div>
+        <div id="arg2-wrap" hidden><label for="arg2" id="arg2-label"></label><input type="text" id="arg2" name="arg2" autocomplete="off"></div>
+
+        <button class="btn" type="submit">Run</button>
+    </form>
+
+    <p id="status" class="status" role="status"></p>
+    <p id="output" class="result" aria-live="polite"></p>
+</section>
+
+<section id="history" class="history-box narrow">{% include "_history.html" %}</section>
+{% endblock %}

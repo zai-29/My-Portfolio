@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Area of a Circle | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section class="split">
+    <div>
+        <h1>Area of a circle</h1>
+        <p class="muted">The cylinder resizes as you type. Drag it to rotate.</p>
+        <form id="area-form" action="{{ url_for('compute_circle') }}" method="post" class="stack">
+            <label for="radius">Radius</label>
+            <div class="row">
+                <input type="number" id="radius" name="radius" step="any" min="0.01" value="3" required>
+                <select id="unit" name="unit" aria-label="Unit of the radius">{% for u in units %}<option value="{{ u }}"{{ " selected" if u == "cm" }}>{{ u }}</option>{% endfor %}</select>
+            </div>
+            <label for="out_unit">Show the area in</label>
+            <select id="out_unit" name="out_unit">
+                <option value="same">same unit as the radius</option>
+                {% for u in units %}<option value="{{ u }}">{{ u }}²</option>{% endfor %}
+            </select>
+            <button class="btn" type="submit">Compute area</button>
+        </form>
+        <p id="status" class="status" role="status"></p>
+        <p id="output" class="result" aria-live="polite"></p>
+        <p id="detail" class="muted"></p>
+    </div>
+    <div>
+        <div id="stage" class="stage" data-shape="circle"></div>
+        <p id="grid-note" class="muted caption"></p>
+    </div>
+</section>
+
+<section id="history" class="history-box">{% include "_history.html" %}</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/shapes.js') }}"></script>
+{% endblock %}

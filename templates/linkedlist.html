@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Doubly Linked List | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Doubly linked list</h1>
+    <div id="list-view">{{ chain | safe }}</div>
+    <p id="status" class="status" role="status"></p>
+
+    <div class="ops">
+        <form method="post" class="op ll-form" action="{{ url_for('linkedlist_action') }}">
+            <h2>Add</h2>
+            <input type="text" name="value" placeholder="Value" autocomplete="off" required>
+            <div class="row">
+                <button class="btn" name="action" value="append">Add to end</button>
+                <button class="btn" name="action" value="prepend">Add to front</button>
+            </div>
+        </form>
+
+        <form method="post" class="op ll-form" action="{{ url_for('linkedlist_action') }}">
+            <h2>Insert at position</h2>
+            <div class="row">
+                <input type="text" name="value" placeholder="Value" autocomplete="off" required>
+                <input type="number" name="index" placeholder="Position" min="0" required>
+            </div>
+            <button class="btn" name="action" value="insert">Insert</button>
+        </form>
+
+        <form method="post" class="op ll-form" action="{{ url_for('linkedlist_action') }}">
+            <h2>Insert after a value</h2>
+            <div class="row">
+                <input type="text" name="after" placeholder="After this value" autocomplete="off" required>
+                <input type="text" name="value" placeholder="New value" autocomplete="off" required>
+            </div>
+            <button class="btn" name="action" value="insert_after">Insert after</button>
+        </form>
+
+        <form method="post" class="op ll-form" action="{{ url_for('linkedlist_action') }}">
+            <h2>Find or remove</h2>
+            <input type="text" name="value" placeholder="Value" autocomplete="off" required>
+            <div class="row">
+                <button class="btn" name="action" value="search">Search</button>
+                <button class="btn" name="action" value="delete">Delete</button>
+            </div>
+        </form>
+
+        <form method="post" class="op ll-form" action="{{ url_for('linkedlist_action') }}">
+            <h2>Whole list</h2>
+            <div class="row">
+                <button class="btn" name="action" value="pop_front">Remove first</button>
+                <button class="btn" name="action" value="pop_back">Remove last</button>
+                <button class="btn" name="action" value="reverse">Reverse</button>
+                <button class="btn" name="action" value="clear">Clear</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

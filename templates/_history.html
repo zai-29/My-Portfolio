@@ -1,0 +1,11 @@
+<div class="history-head">
+    <h2>History</h2>
+    {% if entries %}<button type="button" class="btn small" data-clear-history="{{ work }}">Clear history</button>{% endif %}
+</div>
+{% if entries %}
+<ul class="history">
+    {% for e in entries %}<li><span class="time">{{ e.t }}</span><span>{{ e.text }}</span></li>{% endfor %}
+</ul>
+{% else %}
+<p class="muted">Nothing yet. Your results will show up here.</p>
+{% endif %}

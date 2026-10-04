@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Profile | Gabriel Carl Calasang{% endblock %}
+
+{% block content %}
+<section class="profile">
+    <div class="photo">
+        <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Photo of {{ profile.name }}"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none">Your photo here</div>
+    </div>
+
+    <div class="details">
+        <h1>{{ profile.name }}</h1>
+        <dl>
+            <dt>Course and section</dt><dd>{{ profile.course }}</dd>
+            <dt>Subject</dt><dd>{{ profile.subject }}</dd>
+        </dl>
+        <blockquote>{{ profile.motto }}</blockquote>
+        <a class="btn" href="{{ url_for('contact') }}">Get in touch</a>
+    </div>
+</section>
+{% endblock %}

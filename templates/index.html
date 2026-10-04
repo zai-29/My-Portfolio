@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Programming Works | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section class="intro">
+    <h1>Programming works</h1>
+    <p>Programs I built in relation to Programming. Pick one to try or discover it.</p>
+</section>
+
+<section class="grid">
+    {% for work in works %}
+    <a class="card" href="{{ url_for(work.url) }}">
+        <h2>{{ work.title }}</h2>
+        <p>{{ work.desc }}</p>
+    </a>
+    {% endfor %}
+</section>
+
+<section class="who">
+    <div>
+        <h2>{{ profile.name }}</h2>
+        <p class="muted">{{ profile.course }}</p>
+    </div>
+    <a class="btn" href="{{ url_for('profile') }}">View profile</a>
+</section>
+{% endblock %}

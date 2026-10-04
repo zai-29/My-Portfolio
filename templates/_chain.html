@@ -1,0 +1,20 @@
+<p class="muted">{{ size }} node{{ '' if size == 1 else 's' }}. Each node points to the one before it and the one after it.</p>
+<div class="chain" aria-label="Doubly linked list contents">
+    {% if items %}
+        <span class="null">None</span>
+        {% for item in items %}
+            <span class="link"></span>
+            <div class="slot">
+                <span class="label">{% if loop.first and loop.last %}head, tail{% elif loop.first %}head{% elif loop.last %}tail{% endif %}</span>
+                <div class="node{{ ' found' if found == loop.index0 }}{{ ' new' if new == loop.index0 }}">
+                    <span class="ptr"></span><span class="val">{{ item }}</span><span class="ptr"></span>
+                </div>
+            </div>
+        {% endfor %}
+        <span class="link"></span>
+        <span class="null">None</span>
+    {% else %}
+        <p class="muted">The list is empty. Add a value below.</p>
+    {% endif %}
+</div>
+{% if backward %}<p class="muted back">Backward from tail: {{ backward | join(', ') }}</p>{% endif %}
