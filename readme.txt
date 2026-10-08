@@ -1,3 +1,3 @@
 run this on terminal
 
-py app.py
+python app.py
