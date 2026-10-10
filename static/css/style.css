@@ -222,3 +222,207 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1p
 @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
 }
+
+/* ===== Floating glass header (iOS style) ===== */
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.75);
+    --glass-shadow: 0 8px 32px rgba(20, 20, 40, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --glass-hover: rgba(255, 255, 255, 0.55);
+    --glass-active: rgba(255, 255, 255, 0.95);
+}
+
+:root[data-theme="dark"] {
+    --glass-bg: rgba(44, 44, 54, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.14);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    --glass-hover: rgba(255, 255, 255, 0.10);
+    --glass-active: rgba(255, 255, 255, 0.20);
+}
+
+/* The bar itself is invisible; only the pills inside it show.
+   The margin is the gap from the top and from the left/right edges. */
+.nav {
+    position: sticky;
+    top: 14px;
+    z-index: 20;
+    margin: 14px 20px 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;           /* clicks pass through the empty space */
+}
+
+/* Both pills share the glass look */
+.brand,
+.nav nav {
+    pointer-events: auto;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 999px;
+}
+
+.brand {
+    padding: 11px 24px;
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+.brand:hover, .brand:focus-visible {
+    transform: scale(1.05);
+    box-shadow: var(--shadow), inset 0 1px 0 var(--glass-border);
+}
+
+.nav nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+}
+
+.nav nav a {
+    padding: 8px 18px;
+    border-radius: 999px;
+    color: var(--ink);
+    opacity: .72;
+    background: transparent;
+    box-shadow: none;
+    transition: transform .18s ease, background .18s ease, opacity .18s ease, box-shadow .18s ease;
+}
+.nav nav a:hover {
+    transform: scale(1.07);
+    opacity: 1;
+    background: var(--glass-hover);
+    box-shadow: 0 4px 14px rgba(20, 20, 40, 0.15);
+}
+.nav nav a.active {
+    opacity: 1;
+    background: var(--glass-active);
+    box-shadow: 0 2px 8px rgba(20, 20, 40, 0.12);
+}
+
+/* Dark mode button sits inside the pill */
+.nav .icon-btn {
+    border: 0;
+    background: transparent;
+    width: 38px;
+    height: 38px;
+}
+.nav .icon-btn:hover, .nav .icon-btn:focus-visible {
+    background: var(--glass-hover);
+    box-shadow: 0 4px 14px rgba(20, 20, 40, 0.15);
+}
+
+/* Browsers without blur support get a solid pill instead */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .brand, .nav nav { background: var(--surface); }
+}
+
+/* Phones: stack the two pills */
+@media (max-width: 720px) {
+    .nav { flex-direction: column; align-items: center; margin: 10px 12px 0; gap: 8px; }
+    .nav nav a { padding: 7px 13px; }
+}
+
+/* ===== One merged glass pill, centered ===== */
+.nav {
+    align-self: center;
+    width: fit-content;
+    max-width: calc(100% - 24px);
+    margin: 14px 0 0;
+    padding: 5px;
+    gap: 4px;
+    justify-content: center;
+    pointer-events: auto;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 999px;
+}
+
+/* The name and the links no longer have their own glass */
+.brand {
+    padding: 8px 18px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-radius: 999px;
+}
+.brand:hover, .brand:focus-visible {
+    transform: scale(1.06);
+    background: var(--glass-hover);
+    box-shadow: 0 4px 14px rgba(20, 20, 40, 0.15);
+}
+
+.nav nav {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-radius: 0;
+    padding: 0;
+    gap: 4px;
+}
+
+/* Thin divider between the name and the links */
+.nav nav::before {
+    content: "";
+    width: 1px;
+    height: 22px;
+    background: rgba(128, 128, 140, 0.35);
+    margin: 0 6px 0 2px;
+    align-self: center;
+}
+
+/* Phones: stack inside the same pill */
+@media (max-width: 720px) {
+    .nav { flex-direction: column; border-radius: 28px; padding: 8px; margin: 10px 0 0; gap: 4px; }
+    .nav nav::before { display: none; }
+}
+
+/* ---------- Monospace text (infix to postfix) ---------- */
+.mono { font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace; letter-spacing: .04em; }
+input.mono::placeholder { letter-spacing: normal; }
+
+/* ---------- Infix to postfix illustration ---------- */
+.viz { margin-top: 40px; }
+.viz-label { margin: 18px 0 6px; font-weight: 600; }
+.tokens { display: flex; flex-wrap: wrap; gap: 6px; }
+.tok {
+    min-width: 40px; padding: 8px 12px; text-align: center; font-weight: 600; color: var(--muted);
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 8px;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    transition: transform .2s ease, border-color .2s ease, color .2s ease, opacity .2s ease;
+}
+.tok.done { opacity: .35; }
+.tok.current { color: var(--accent); border-color: var(--accent); transform: scale(1.18); box-shadow: var(--shadow); }
+
+.viz .chain { min-height: 104px; margin: 0; }
+.node.final { border-color: var(--accent); }
+.node.final .val { color: var(--accent); }
+
+.ghostwrap { display: flex; align-items: flex-end; gap: 6px; overflow: hidden; max-width: 220px; animation: leave .9s ease forwards; }
+@keyframes leave {
+    0%   { opacity: 1; transform: translateY(0); max-width: 220px; }
+    60%  { opacity: .5; }
+    100% { opacity: 0; transform: translateY(-22px); max-width: 0; }
+}
+
+.viz-note { display: flex; flex-direction: column; gap: 2px; margin: 18px 0; min-height: 3.4em; }
+.viz-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.viz-controls select { width: auto; padding: 5px 10px; }
+.viz-controls .btn:disabled { opacity: .4; cursor: default; transform: none; box-shadow: none; }
+.viz-controls #viz-count { margin-left: auto; }

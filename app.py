@@ -5,6 +5,8 @@ from flask import Flask, render_template, request, jsonify, session
 
 from linkedlist import LinkedList
 
+from infix import infixToPostfix, validate_infix
+
 app = Flask(__name__)
 app.secret_key = "gc-portfolio-8f3k29xqLm4vT7pZ"
 
@@ -12,7 +14,7 @@ PROFILE = {
     "name": "Gabriel Carl S. Calasang",
     "course": "BSCpE 2-3",
     "subject": "Data Structures and Algorithms",
-    "motto": "Small steps every day build big things.",
+    "motto": "Live the Best Story of Your Life.",
     "email": "gabrielcarlcalasang@gmail.com",
     "phone": "+63 935 115 6394",
     "location": "Imus City, Cavite, Philippines",
@@ -24,6 +26,7 @@ WORKS = [
     {"title": "Area of a Circle", "desc": "Pick a unit and watch a 3D cylinder resize.", "url": "acircle"},
     {"title": "Area of a Triangle", "desc": "Pick a unit and watch a 3D prism resize.", "url": "atriangle"},
     {"title": "Doubly Linked List", "desc": "Add, insert, search, delete and reverse nodes.", "url": "linkedlist"},
+    {"title": "Infix to Postfix", "desc": "Convert an expression with a stack. Invalid input is detected.", "url": "postfix"},
 ]
 
 # ---------- Units (metres per unit) ----------
@@ -199,6 +202,25 @@ def compute_triangle():
     add_history("triangle", f"b = {fmt(base)}, h = {fmt(height)} {unit_in}  →  {result}")
     return jsonify(ok=True, result=result, detail=detail, history=history_html("triangle"))
 
+# ---------- Infix to postfix ----------
+@app.route("/works/postfix")
+def postfix():
+    return render_template("postfix.html", entries=get_history("postfix"), work="postfix")
+
+
+@app.route("/works/postfix/convert", methods=["POST"])
+def convert_postfix():
+    expression = request.form.get("expression", "").strip()
+    error = validate_infix(expression)
+    if error:
+        return jsonify(ok=False, error=error), 400
+
+    cleaned = "".join(expression.split())
+    steps = []
+    result = infixToPostfix(cleaned, steps)
+    add_history("postfix", f"{expression}  →  {result}")
+    return jsonify(ok=True, result=result, detail=f"Infix: {expression}", history=history_html("postfix"),
+                   steps=steps, tokens=list(cleaned))
 
 # ---------- Doubly linked list ----------
 my_list = LinkedList()

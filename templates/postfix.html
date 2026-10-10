@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Infix to Postfix | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section class="narrow">
+    <h1>Infix to postfix</h1>
+    <p class="muted">Use single letters or digits as operands, with + - * / ^ and parentheses.</p>
+
+    <form id="postfix-form" action="{{ url_for('convert_postfix') }}" method="post" class="stack">
+        <label for="expression">Infix expression</label>
+        <input type="text" id="expression" name="expression" class="mono" placeholder="e.g. a*(b+c)/d"
+               autocomplete="off" spellcheck="false" required>
+        <button class="btn" type="submit">Convert</button>
+    </form>
+
+    <p id="status" class="status" role="status"></p>
+    <p id="output" class="result mono" aria-live="polite"></p>
+    <p id="detail" class="muted mono"></p>
+</section>
+
+<section id="viz" class="viz" hidden>
+    <h2>How it converts</h2>
+    <p class="muted">The stack is a linked list. Pushing adds a node at the tail and popping removes the tail, so the top of the stack is on the right.</p>
+
+    <p class="viz-label">Infix expression</p>
+    <div id="viz-tokens" class="tokens"></div>
+
+    <p class="viz-label">Stack <span class="muted">(top is on the right)</span></p>
+    <div id="viz-stack" class="chain"></div>
+
+    <p class="viz-label">Postfix output</p>
+    <div id="viz-output" class="chain"></div>
+
+    <div class="viz-note">
+        <strong id="viz-title"></strong>
+        <span id="viz-why" class="muted"></span>
+    </div>
+
+    <div class="viz-controls">
+        <button type="button" class="btn small" id="viz-restart">Restart</button>
+        <button type="button" class="btn small" id="viz-prev">Back</button>
+        <button type="button" class="btn small" id="viz-play">Pause</button>
+        <button type="button" class="btn small" id="viz-next">Next</button>
+        <label for="viz-speed" class="muted">Speed</label>
+        <select id="viz-speed">
+            <option value="1600">Slow</option>
+            <option value="1000" selected>Normal</option>
+            <option value="500">Fast</option>
+        </select>
+        <span id="viz-count" class="muted"></span>
+    </div>
+</section>
+
+<section id="history" class="history-box narrow">{% include "_history.html" %}</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/postfix.js') }}"></script>
+{% endblock %}

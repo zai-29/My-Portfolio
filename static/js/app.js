@@ -2,16 +2,6 @@
 (function () {
     const $ = (selector, root = document) => root.querySelector(selector);
 
-    // ---------- Dark mode ----------
-    const toggle = $("#theme-toggle");
-    if (toggle) {
-        toggle.addEventListener("click", () => {
-            const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-            document.documentElement.dataset.theme = next;
-            try { localStorage.setItem("theme", next); } catch (e) {}
-        });
-    }
-
     // ---------- Helpers ----------
     async function send(url, formData) {
         try {
@@ -46,6 +36,7 @@
             setStatus(data.error, "error");
         }
         setHistory(data.history);
+        document.dispatchEvent(new CustomEvent("calc:result", { detail: data }));
     }
 
     // ---------- Clear history (works on every page that has one) ----------
@@ -77,7 +68,7 @@
     }
 
     // ---------- Area of circle and triangle ----------
-    const areaForm = $("#area-form");
+    const areaForm = $("#area-form") || $("#postfix-form");
     if (areaForm) {
         areaForm.addEventListener("submit", async (event) => {
             event.preventDefault();
