@@ -1,6 +1,5 @@
-// Animates the infix to postfix conversion, one step at a time.
-// The server sends every step (the stack and the output at that moment).
-// This file only draws them, using the same node boxes as the linked list page.
+// Infix to postfix visualizer: a stack column and an output column.
+// The server (infix.py) records every step. This file only replays the recording.
 (function () {
     const panel = document.getElementById("viz");
     if (!panel) return;
@@ -18,46 +17,80 @@
         return span.innerHTML;
     }
 
-    function nodeBox(value, classes) {
-        return '<div class="node' + classes + '"><span class="ptr"></span>' +
-               '<span class="val">' + esc(value) + '</span><span class="ptr"></span></div>';
+    // ---------- Empty state (also used by the Reset button) ----------
+    function reset() {
+        clearTimeout(timer);
+        playing = false;
+        steps = [];
+        chars = [];
+        index = 0;
+        el("viz-tokens").innerHTML = "";
+        el("viz-stack").innerHTML = '<p class="muted col-empty">Stack is empty</p>';
+        el("viz-output").innerHTML = '<p class="muted col-empty">Output will appear here</p>';
+        el("viz-title").textContent = "Enter an infix expression and click Convert";
+        el("viz-why").textContent = "";
+        el("viz-controls").hidden = true;
     }
 
-    // Same drawing as the doubly linked list page:  None <-> [node] <-> [node] <-> None
-    function chain(items, newIndex, lastLabel, popped, finished, emptyText) {
-        if (!items.length && !popped) return '<p class="muted">' + emptyText + "</p>";
-
-        let html = '<span class="null">None</span>';
-        items.forEach((value, i) => {
-            let label = "";
-            if (items.length === 1) label = "head, " + lastLabel;
-            else if (i === 0) label = "head";
-            else if (i === items.length - 1) label = lastLabel;
-
-            const classes = (i === newIndex ? " new" : "") + (finished ? " final" : "");
-            html += '<span class="link"></span><div class="slot"><span class="label">' + label +
-                    "</span>" + nodeBox(value, classes) + "</div>";
-        });
-
-        // The node that was just popped fades upward
-        if (popped) {
-            html += '<div class="ghostwrap"><span class="link"></span><div class="slot">' +
-                    '<span class="label"></span>' + nodeBox(popped, "") + "</div></div>";
+    // ---------- Which token is where? ----------
+    // Replays the steps up to now: "written" tokens are in the output,
+    // "discarded" are parentheses that were thrown away, everything else is
+    // either still waiting on the stack or not scanned yet.
+    function tokenStates() {
+        const state = chars.map(() => "waiting");
+        const onStack = [];
+        for (let k = 0; k <= index; k++) {
+            const s = steps[k];
+            if (s.new_stack !== null) {                    // pushed
+                onStack.push(s.i);
+            } else if (s.popped !== null) {                // popped from the stack
+                const t = onStack.pop();
+                if (s.new_output !== null) {
+                    state[t] = "written";                  // operator moved to the output
+                } else {
+                    state[t] = "discarded";                // '(' thrown away
+                    state[s.i] = "discarded";              // and the ')' that found it
+                }
+            } else if (s.new_output !== null) {            // operand went straight to the output
+                state[s.i] = "written";
+            }
         }
-        return html + '<span class="link"></span><span class="null">None</span>';
+        return state;
+    }
+
+    // ---------- Drawing ----------
+    function stackHTML(items, popped, newOnTop) {
+        let html = "";
+        if (popped) html += '<div class="s-item ghost">' + esc(popped) + "</div>";
+        if (!items.length) return html + '<p class="muted col-empty">Stack is empty</p>';
+
+        items.slice().reverse().forEach((value, k) => {
+            const classes = (k === 0 ? " top" : "") + (k === 0 && newOnTop ? " new" : "");
+            html += '<div class="s-item' + classes + '">' + esc(value) +
+                    (k === 0 ? '<span class="tag">top</span>' : "") + "</div>";
+        });
+        return html;
+    }
+
+    function outputHTML(items, newIndex, finished) {
+        if (!items.length) return '<p class="muted col-empty">Output will appear here</p>';
+        return '<div class="out-row">' + items.map((value, i) =>
+            '<span class="o-item' + (i === newIndex ? " new" : "") + (finished ? " final" : "") + '">' +
+            esc(value) + "</span>").join("") + "</div>";
     }
 
     function render() {
         const step = steps[index];
         const last = index === steps.length - 1;
+        const state = tokenStates();
 
         el("viz-tokens").innerHTML = chars.map((c, i) => {
-            const state = i === step.i ? " current" : i < step.i ? " done" : "";
-            return '<span class="tok' + state + '">' + esc(c) + "</span>";
+            const cls = i === step.i ? "current" : state[i];
+            return '<span class="tok ' + cls + '">' + esc(c) + "</span>";
         }).join("");
 
-        el("viz-stack").innerHTML = chain(step.stack, step.new_stack, "top", step.popped, false, "The stack is empty.");
-        el("viz-output").innerHTML = chain(step.output, step.new_output, "tail", null, last, "The output is empty.");
+        el("viz-stack").innerHTML = stackHTML(step.stack, step.popped, step.new_stack !== null);
+        el("viz-output").innerHTML = outputHTML(step.output, step.new_output, last);
 
         el("viz-title").textContent = step.title;
         el("viz-why").textContent = step.why;
@@ -68,6 +101,7 @@
         if (!playing) playButton.textContent = last ? "Replay" : "Play";
     }
 
+    // ---------- Playing ----------
     function schedule() {
         clearTimeout(timer);
         timer = setTimeout(() => {
@@ -103,21 +137,33 @@
     el("viz-restart").addEventListener("click", () => { index = 0; render(); play(); });
     speed.addEventListener("change", () => { if (playing) schedule(); });
 
+    // Reset button: clear the input, the result and the visualizer
+    const resetButton = el("postfix-reset");
+    if (resetButton) {
+        resetButton.addEventListener("click", () => {
+            el("expression").value = "";
+            ["output", "detail", "status"].forEach((id) => { el(id).textContent = ""; });
+            reset();
+            el("expression").focus();
+        });
+    }
+
     // app.js announces every finished conversion
     document.addEventListener("calc:result", (event) => {
         const data = event.detail;
-        clearTimeout(timer);
-        playing = false;
-
         if (!data.ok || !data.steps) {
-            panel.hidden = true;
+            reset();
             return;
         }
+        clearTimeout(timer);
+        playing = false;
         steps = data.steps;
         chars = data.tokens;
         index = 0;
-        panel.hidden = false;
+        el("viz-controls").hidden = false;
         render();
         if (!reduceMotion) play();
     });
+
+    reset();
 })();

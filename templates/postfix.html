@@ -10,7 +10,10 @@
         <label for="expression">Infix expression</label>
         <input type="text" id="expression" name="expression" class="mono" placeholder="e.g. a*(b+c)/d"
                autocomplete="off" spellcheck="false" required>
-        <button class="btn" type="submit">Convert</button>
+        <div class="row actions">
+            <button class="btn" type="submit">Convert</button>
+            <button class="btn secondary" type="button" id="postfix-reset">Reset</button>
+        </div>
     </form>
 
     <p id="status" class="status" role="status"></p>
@@ -18,25 +21,32 @@
     <p id="detail" class="muted mono"></p>
 </section>
 
-<section id="viz" class="viz" hidden>
-    <h2>How it converts</h2>
-    <p class="muted">The stack is a linked list. Pushing adds a node at the tail and popping removes the tail, so the top of the stack is on the right.</p>
-
-    <p class="viz-label">Infix expression</p>
-    <div id="viz-tokens" class="tokens"></div>
-
-    <p class="viz-label">Stack <span class="muted">(top is on the right)</span></p>
-    <div id="viz-stack" class="chain"></div>
-
-    <p class="viz-label">Postfix output</p>
-    <div id="viz-output" class="chain"></div>
-
+<section id="viz" class="viz">
+    <h2>Conversion status</h2>
     <div class="viz-note">
-        <strong id="viz-title"></strong>
+        <strong id="viz-title">Enter an infix expression and click Convert</strong>
         <span id="viz-why" class="muted"></span>
     </div>
 
-    <div class="viz-controls">
+    <div id="viz-tokens" class="tokens"></div>
+    <ul class="legend">
+        <li><i class="sw amber"></i>Token being scanned</li>
+        <li><i class="sw"></i>On the stack / not yet scanned</li>
+        <li><i class="sw green"></i>Written to the output</li>
+    </ul>
+
+    <div class="viz-cols">
+        <div class="viz-col">
+            <h3>Stack</h3>
+            <div id="viz-stack" class="stack-col"><p class="muted col-empty">Stack is empty</p></div>
+        </div>
+        <div class="viz-col">
+            <h3>Output</h3>
+            <div id="viz-output" class="out-col"><p class="muted col-empty">Output will appear here</p></div>
+        </div>
+    </div>
+
+    <div id="viz-controls" class="viz-controls" hidden>
         <button type="button" class="btn small" id="viz-restart">Restart</button>
         <button type="button" class="btn small" id="viz-prev">Back</button>
         <button type="button" class="btn small" id="viz-play">Pause</button>
@@ -49,6 +59,8 @@
         </select>
         <span id="viz-count" class="muted"></span>
     </div>
+
+    <p class="muted caption">Behind the scenes the stack is a doubly linked list: push is <code>insert_at_end</code> and pop is <code>remove_at_end</code>.</p>
 </section>
 
 <section id="history" class="history-box narrow">{% include "_history.html" %}</section>

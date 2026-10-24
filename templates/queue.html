@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Queue and Deque | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Queue and deque</h1>
+    <p class="muted">Pick a structure, add your data, then use its functions. Both are built from linked list nodes.</p>
+
+    <div id="qd" data-url="{{ url_for('queue_action') }}"
+         data-queue='{{ queue_items | tojson }}' data-deque='{{ deque_items | tojson }}'>
+
+        <div class="seg-group" role="group" aria-label="Choose a structure">
+            <button type="button" class="seg" data-mode="queue" aria-pressed="true">Queue</button>
+            <button type="button" class="seg" data-mode="deque" aria-pressed="false">Deque</button>
+        </div>
+
+        <h2 id="qd-title"></h2>
+        <p id="qd-desc" class="muted"></p>
+
+        <div class="q-stage">
+            <div class="q-end left" id="qd-left"></div>
+            <div class="q-items" id="qd-items"></div>
+            <div class="q-end right" id="qd-right"></div>
+        </div>
+        <p id="qd-info" class="muted"></p>
+
+        <div class="q-controls">
+            <div>
+                <label for="qd-value">Data</label>
+                <input type="text" id="qd-value" placeholder="Type your data" maxlength="8" autocomplete="off">
+            </div>
+
+            <div class="q-ops" data-for="queue">
+                <button type="button" class="btn op" data-action="enqueue"><strong>Enqueue</strong><span>Add at the rear</span></button>
+                <button type="button" class="btn op" data-action="dequeue"><strong>Dequeue</strong><span>Remove from the front</span></button>
+            </div>
+
+            <div class="q-ops" data-for="deque" hidden>
+                <button type="button" class="btn op" data-action="addFront"><strong>addFront()</strong><span>Insert at front</span></button>
+                <button type="button" class="btn op" data-action="addRear"><strong>addRear()</strong><span>Insert at rear</span></button>
+                <button type="button" class="btn op" data-action="removeFront"><strong>removeFront()</strong><span>Delete from front</span></button>
+                <button type="button" class="btn op" data-action="removeRear"><strong>removeRear()</strong><span>Delete from rear</span></button>
+            </div>
+
+            <div><button type="button" class="btn secondary small" data-action="clear">Clear all</button></div>
+        </div>
+
+        <p id="qd-status" class="status" role="status"></p>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/queue.js') }}"></script>
+{% endblock %}

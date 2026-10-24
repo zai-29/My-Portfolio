@@ -13,7 +13,7 @@
     <header class="nav">
         <a class="brand" href="{{ url_for('index') }}">My Portfolio</a>
         <nav>
-            <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint in ['index','works','acircle','atriangle', 'postfix','linkedlist'] }}">Works</a>
+            <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint in ['index','works','acircle','atriangle', 'postfix', 'queue_page','linkedlist'] }}">Works</a>
             <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' }}">Profile</a>
             <a href="{{ url_for('contact') }}" class="{{ 'active' if request.endpoint == 'contact' }}">Contact</a>
         </nav>

@@ -7,6 +7,8 @@ from linkedlist import LinkedList
 
 from infix import infixToPostfix, validate_infix
 
+from queues import Queue, Deque
+
 app = Flask(__name__)
 app.secret_key = "gc-portfolio-8f3k29xqLm4vT7pZ"
 
@@ -27,6 +29,7 @@ WORKS = [
     {"title": "Area of a Triangle", "desc": "Pick a unit and watch a 3D prism resize.", "url": "atriangle"},
     {"title": "Doubly Linked List", "desc": "Add, insert, search, delete and reverse nodes.", "url": "linkedlist"},
     {"title": "Infix to Postfix", "desc": "Convert an expression with a stack. Invalid input is detected.", "url": "postfix"},
+    {"title": "Queue and Deque", "desc": "Pick a queue or a deque, add data and watch it work.", "url": "queue_page"},
 ]
 
 # ---------- Units (metres per unit) ----------
@@ -296,6 +299,76 @@ def linkedlist_action():
 
     return jsonify(ok=ok, message=message, html=chain_html(found=found, new=new))
 
+# ---------- Queue and deque ----------
+my_queue = Queue()
+my_deque = Deque()
+for _value in ("A", "B", "C"):
+    my_queue.enqueue(_value)
+    my_deque.addRear(_value)
+
+MAX_ITEMS = 12          # keeps the drawing readable
+MAX_VALUE_LENGTH = 8    # keeps every box a sensible size
+
+MESSAGES = {
+    "enqueue": "Enqueued {} at the rear.",
+    "dequeue": "Dequeued {} from the front.",
+    "addFront": "addFront: inserted {} at the front.",
+    "addRear": "addRear: inserted {} at the rear.",
+    "removeFront": "removeFront: deleted {} from the front.",
+    "removeRear": "removeRear: deleted {} from the rear.",
+}
+
+
+@app.route("/works/queue")
+def queue_page():
+    return render_template("queue.html", queue_items=my_queue.to_list(), deque_items=my_deque.to_list())
+
+
+@app.route("/works/queue/action", methods=["POST"])
+def queue_action():
+    mode = request.form.get("mode", "")
+    action = request.form.get("action", "")
+    value = request.form.get("value", "").strip()
+
+    if mode == "queue":
+        structure = my_queue
+        actions = {"enqueue": ("add", "rear", my_queue.enqueue),
+                   "dequeue": ("remove", "front", my_queue.dequeue)}
+    elif mode == "deque":
+        structure = my_deque
+        actions = {"addFront": ("add", "front", my_deque.addFront),
+                   "addRear": ("add", "rear", my_deque.addRear),
+                   "removeFront": ("remove", "front", my_deque.removeFront),
+                   "removeRear": ("remove", "rear", my_deque.removeRear)}
+    else:
+        return jsonify(ok=False, error="Pick a queue or a deque."), 400
+
+    if action == "clear":
+        structure.clear()
+        return jsonify(ok=True, change="clear", end=None, value=None, items=[],
+                       message=f"The {mode} was cleared.")
+
+    if action not in actions:
+        return jsonify(ok=False, error="Unknown function."), 400
+
+    change, end, method = actions[action]
+
+    if change == "add":
+        if not value:
+            return jsonify(ok=False, error="Type some data first."), 400
+        if len(value) > MAX_VALUE_LENGTH:
+            return jsonify(ok=False, error=f"Keep the data to {MAX_VALUE_LENGTH} characters or fewer."), 400
+        if len(structure) >= MAX_ITEMS:
+            return jsonify(ok=False, error=f"The {mode} is full (maximum {MAX_ITEMS} items)."), 400
+        method(value)
+        shown = value
+    else:
+        shown = method()
+        if shown is None:
+            return jsonify(ok=False, error=f"The {mode} is empty, so there is nothing to remove."), 400
+
+    return jsonify(ok=True, change=change, end=end, value=shown, items=structure.to_list(),
+                   message=MESSAGES[action].format(shown))
 
 if __name__ == "__main__":
     app.run(debug=True)
