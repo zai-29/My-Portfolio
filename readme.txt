@@ -1,3 +1,5 @@
 run this on terminal
 
-py app.py
+pip install flask
+
+python app.py
