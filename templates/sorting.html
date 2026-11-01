@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Sorting Algorithms | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Sorting algorithms</h1>
+    <p class="muted">Type your numbers, choose a sorting algorithm and watch how it sorts them.</p>
+
+    <div id="sv" data-url="{{ url_for('sorting_run') }}" data-info='{{ info | tojson }}'>
+
+        <div class="sv-form">
+            <label for="sv-data">Your data (numbers separated by commas)</label>
+            <input type="text" id="sv-data" class="mono" placeholder="e.g. 5, 2, 9, 1, 7, 3"
+                   autocomplete="off" spellcheck="false">
+        </div>
+
+        <p class="sv-label">Choose a sorting algorithm</p>
+        <div class="seg-group wrap" role="group" aria-label="Sorting algorithm">
+            {% for key in order %}
+            <button type="button" class="seg" data-algo="{{ key }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">{{ info[key].name }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="row sv-actions">
+            <button type="button" class="btn" id="sv-run">Sort</button>
+            <button type="button" class="btn secondary" id="sv-random">Random numbers</button>
+        </div>
+        <p id="sv-status" class="status" role="status"></p>
+
+        <div id="sv-viz" class="sv-viz" hidden>
+            <div class="viz-note">
+                <strong id="sv-title"></strong>
+                <span id="sv-msg" class="muted"></span>
+            </div>
+
+            <div id="sv-key" class="sv-key" hidden></div>
+            <div id="sv-bars" class="bars" aria-label="Bars showing the list"></div>
+
+            <div id="sv-aux-wrap" hidden>
+                <p class="sv-label">Copy of the range being merged</p>
+                <div id="sv-aux" class="bars aux"></div>
+            </div>
+
+            <ul class="legend">
+                <li><i class="sw bar-blue"></i>Not sorted yet</li>
+                <li><i class="sw amber"></i>Being compared</li>
+                <li><i class="sw coral"></i>Swapped / written</li>
+                <li><i class="sw violet"></i>Pivot</li>
+                <li><i class="sw teal"></i>Smallest so far / boundary</li>
+                <li><i class="sw green"></i>Sorted</li>
+            </ul>
+            <p id="sv-counts" class="muted mono"></p>
+
+            <div class="viz-controls">
+                <button type="button" class="btn small" id="sv-restart">Restart</button>
+                <button type="button" class="btn small" id="sv-prev">Back</button>
+                <button type="button" class="btn small" id="sv-play">Pause</button>
+                <button type="button" class="btn small" id="sv-next">Next</button>
+                <input type="range" id="sv-scrub" min="0" max="0" value="0" aria-label="Step">
+                <label for="sv-speed" class="muted">Speed</label>
+                <select id="sv-speed">
+                    <option value="800">Slow</option>
+                    <option value="400" selected>Normal</option>
+                    <option value="150">Fast</option>
+                    <option value="50">Very fast</option>
+                </select>
+                <span id="sv-count" class="muted"></span>
+            </div>
+        </div>
+        <div class="sv-info">
+            <h2 id="sv-name"></h2>
+            <p id="sv-desc" class="muted"></p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/sorting.js') }}"></script>
+{% endblock %}
