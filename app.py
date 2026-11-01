@@ -9,6 +9,8 @@ from infix import infixToPostfix, validate_infix
 
 from queues import Queue, Deque
 
+from sorting import SORT_INFO, SORT_ORDER, parse_numbers, run_sort
+
 app = Flask(__name__)
 app.secret_key = "gc-portfolio-8f3k29xqLm4vT7pZ"
 
@@ -30,6 +32,7 @@ WORKS = [
     {"title": "Doubly Linked List", "desc": "Add, insert, search, delete and reverse nodes.", "url": "linkedlist"},
     {"title": "Infix to Postfix", "desc": "Convert an expression with a stack. Invalid input is detected.", "url": "postfix"},
     {"title": "Queue and Deque", "desc": "Pick a queue or a deque, add data and watch it work.", "url": "queue_page"},
+    {"title": "Sorting Algorithms", "desc": "Bubble, selection, insertion, merge and quick sort, animated with bars.", "url": "sorting_page"},
 ]
 
 # ---------- Units (metres per unit) ----------
@@ -369,6 +372,24 @@ def queue_action():
 
     return jsonify(ok=True, change=change, end=end, value=shown, items=structure.to_list(),
                    message=MESSAGES[action].format(shown))
+
+# ---------- Sorting algorithms ----------
+@app.route("/works/sorting")
+def sorting_page():
+    return render_template("sorting.html", order=SORT_ORDER, info=SORT_INFO)
+
+
+@app.route("/works/sorting/run", methods=["POST"])
+def sorting_run():
+    algorithm = request.form.get("algorithm", "")
+    if algorithm not in SORT_INFO:
+        return jsonify(ok=False, error="Pick a sorting algorithm."), 400
+
+    values, error = parse_numbers(request.form.get("data", ""))
+    if error:
+        return jsonify(ok=False, error=error), 400
+
+    return jsonify(ok=True, steps=run_sort(algorithm, values))
 
 if __name__ == "__main__":
     app.run(debug=True)
