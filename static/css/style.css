@@ -588,3 +588,49 @@ details summary { cursor: pointer; font-weight: 600; margin: 8px 0; }
     .bars { height: 240px; gap: 3px; padding: 10px 8px 0; }
     .bar-val { font-size: .6rem; }
 }
+
+/* ---------- Binary search tree ---------- */
+:root { --amber: #f5b301; --green: #3ecf8e; --bar: #5b73ff; --coral: #ff6b6b; }
+
+.sw.bar-blue { background: var(--bar); border-color: var(--bar); }
+.sw.amber { background: var(--amber); border-color: var(--amber); }
+.sw.green { background: var(--green); border-color: var(--green); }
+.sw.coral { background: var(--coral); border-color: var(--coral); }
+
+.tv-controls { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; max-width: 640px; }
+.tv-field label { display: block; margin-bottom: 6px; }
+.tv-field input { max-width: 220px; }
+.tv-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.tv-row .btn { margin-top: 0; }
+
+.tree-box {
+    display: flex; justify-content: center; align-items: center; min-height: 260px; padding: 16px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow-x: auto;
+}
+.tree-box > div { width: 100%; }
+.tree-svg { display: block; margin: 0 auto; }
+.tv-empty { margin: 0; text-align: center; }
+
+.t-edge { stroke: var(--muted); stroke-width: 2; }
+.t-node circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; transition: fill .25s ease, stroke .25s ease; }
+.t-node text {
+    fill: var(--ink); text-anchor: middle; dominant-baseline: central;
+    font: 700 15px ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+.t-node.visited circle { fill: var(--bar); stroke: var(--bar); }
+.t-node.visited text { fill: #fff; }
+.t-node.focus circle { fill: var(--amber); stroke: var(--amber); }
+.t-node.found circle { fill: var(--green); stroke: var(--green); }
+.t-node.remove circle { fill: var(--coral); stroke: var(--coral); }
+.t-node.focus text, .t-node.found text, .t-node.remove text { fill: #1c1c1e; }
+.t-node.pop { transform-box: fill-box; transform-origin: center; animation: nodepop .4s ease; }
+@keyframes nodepop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.sv-label { margin: 20px 0 8px; font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+    min-width: 44px; padding: 8px 12px; text-align: center; font-weight: 700; color: var(--bar);
+    background: var(--surface); border: 1.5px solid var(--bar); border-radius: 8px;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+.chip.new { animation: pop .3s ease; }

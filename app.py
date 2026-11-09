@@ -11,6 +11,8 @@ from queues import Queue, Deque
 
 from sorting import SORT_INFO, SORT_ORDER, parse_numbers, run_sort
 
+from tree_steps import run_tree_action, sample_tree, tree_to_dict
+
 app = Flask(__name__)
 app.secret_key = "gc-portfolio-8f3k29xqLm4vT7pZ"
 
@@ -33,6 +35,7 @@ WORKS = [
     {"title": "Infix to Postfix", "desc": "Convert an expression with a stack. Invalid input is detected.", "url": "postfix"},
     {"title": "Queue and Deque", "desc": "Pick a queue or a deque, add data and watch it work.", "url": "queue_page"},
     {"title": "Sorting Algorithms", "desc": "Bubble, selection, insertion, merge and quick sort, animated with bars.", "url": "sorting_page"},
+    {"title": "Binary Tree", "desc": "Insert, search, delete and traverse a binary search tree.", "url": "tree_page"},
 ]
 
 # ---------- Units (metres per unit) ----------
@@ -390,6 +393,23 @@ def sorting_run():
         return jsonify(ok=False, error=error), 400
 
     return jsonify(ok=True, steps=run_sort(algorithm, values))
+
+# ---------- Binary search tree ----------
+my_tree = sample_tree()          # starts with 50, 30, 70, 20, 40, 60, 80
+
+
+@app.route("/works/tree")
+def tree_page():
+    return render_template("tree.html", tree=tree_to_dict(my_tree.root))
+
+
+@app.route("/works/tree/action", methods=["POST"])
+def tree_action():
+    action = request.form.get("action", "")
+    outcome, error = run_tree_action(my_tree, action, request.form.get("value", ""))
+    if error:
+        return jsonify(ok=False, error=error), 400
+    return jsonify(ok=True, **outcome)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Binary Tree | Gabriel Calasang{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Binary search tree</h1>
+    <p class="muted">Smaller numbers go to the left of a node and bigger numbers go to the right.
+       Insert, search and delete numbers, or run a traversal and watch it happen.</p>
+
+    <div id="tv" data-url="{{ url_for('tree_action') }}" data-tree='{{ tree | tojson }}'>
+
+        <div class="tv-controls">
+            <div class="tv-field">
+                <label for="tv-value">Number (0 to 999)</label>
+                <input type="number" id="tv-value" class="mono" placeholder="e.g. 45" min="0" max="999" step="1">
+            </div>
+            <div class="tv-row">
+                <button type="button" class="btn" data-action="insert">Insert</button>
+                <button type="button" class="btn" data-action="search">Search</button>
+                <button type="button" class="btn" data-action="delete">Delete</button>
+            </div>
+            <div class="tv-row">
+                <button type="button" class="btn secondary" data-action="inorder">Inorder</button>
+                <button type="button" class="btn secondary" data-action="preorder">Preorder</button>
+                <button type="button" class="btn secondary" data-action="postorder">Postorder</button>
+            </div>
+            <div class="tv-row">
+                <button type="button" class="btn secondary small" data-action="random">Random tree</button>
+                <button type="button" class="btn secondary small" data-action="clear">Clear</button>
+            </div>
+        </div>
+        <p id="tv-status" class="status" role="status"></p>
+
+        <div class="viz-note">
+            <strong id="tv-title">Binary search tree</strong>
+            <span id="tv-msg" class="muted">Try inserting a number, searching for one, or deleting one.</span>
+        </div>
+
+        <div class="tree-box"><div id="tv-tree"></div></div>
+
+        <div id="tv-output-wrap" hidden>
+            <p class="sv-label" id="tv-output-label"></p>
+            <div id="tv-output" class="chips"></div>
+        </div>
+
+        <ul class="legend">
+            <li><i class="sw"></i>Node</li>
+            <li><i class="sw amber"></i>Being compared</li>
+            <li><i class="sw green"></i>Found / new / replacement</li>
+            <li><i class="sw coral"></i>To be removed</li>
+            <li><i class="sw bar-blue"></i>Visited</li>
+        </ul>
+
+        <div id="tv-controls" class="viz-controls" hidden>
+            <button type="button" class="btn small" id="tv-restart">Restart</button>
+            <button type="button" class="btn small" id="tv-prev">Back</button>
+            <button type="button" class="btn small" id="tv-play">Pause</button>
+            <button type="button" class="btn small" id="tv-next">Next</button>
+            <input type="range" id="tv-scrub" min="0" max="0" value="0" aria-label="Step">
+            <label for="tv-speed" class="muted">Speed</label>
+            <select id="tv-speed">
+                <option value="1500">Slow</option>
+                <option value="900" selected>Normal</option>
+                <option value="400">Fast</option>
+            </select>
+            <span id="tv-count" class="muted"></span>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/tree.js') }}"></script>
+{% endblock %}
